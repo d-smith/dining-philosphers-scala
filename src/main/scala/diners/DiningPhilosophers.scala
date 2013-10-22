@@ -17,6 +17,10 @@ class Fork extends Actor {
   import context._
 
   def inUse(diner: ActorRef): Receive = {
+    case Putdown(`diner`) => {
+      become(available)
+    }
+    case Pickup(diner) => sender ! InUse(self)
     case ProbeCurrentBehavior => sender ! "inUse"
 
   }

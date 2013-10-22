@@ -41,17 +41,34 @@ class ForkTest extends TestKit(ActorSystem("test-system"))
 
       }
 
-      /*"not given to another diner when in use" in {
+      "not given to another diner when in use" in {
+        val freshFork = TestActorRef[Fork]
+        val diner = TestActorRef[Philosopher]
+        freshFork ! Pickup(diner)
+        freshFork ! Pickup(self)
+        expectMsg(InUse(freshFork))
 
       }
+
 
       "become available when put down" in {
-
+        val freshFork = TestActorRef[Fork]
+        val diner = TestActorRef[Philosopher]
+        freshFork ! Pickup(diner)
+        freshFork ! Putdown(diner)
+        freshFork ! Pickup(self)
+        expectMsg(GotIt(freshFork))
       }
 
-      "can be taken after being put down" in {
-        assert(true)
+      "not put down when another diner commands it" in {
+        val freshFork = TestActorRef[Fork]
+        val diner = TestActorRef[Philosopher]
+        freshFork ! Pickup(diner)
+        freshFork ! Putdown(self)
+        freshFork ! Pickup(self)
+        expectMsg(InUse(freshFork))
       }
-      */
+
+
     }
 }
