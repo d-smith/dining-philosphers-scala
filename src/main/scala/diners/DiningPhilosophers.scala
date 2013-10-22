@@ -8,6 +8,31 @@ sealed trait DinerMessage
 case object Think extends DinerMessage
 case object ProbeCurrentBehavior extends DinerMessage
 case object Eat extends DinerMessage
+case class Pickup(diner: ActorRef)
+case class Putdown(diner: ActorRef)
+case class InUse(fork: ActorRef)
+case class GotIt(fork:ActorRef)
+
+class Fork extends Actor {
+  import context._
+
+  def inUse(diner: ActorRef): Receive = {
+    case ProbeCurrentBehavior => sender ! "inUse"
+
+  }
+
+  def available: Receive = {
+    case Pickup(diner) => {
+      become(inUse(diner))
+      diner ! GotIt(self)
+    }
+
+    case ProbeCurrentBehavior => sender ! "available"
+
+  }
+
+  def receive = available
+}
 
 class Philosopher extends Actor {
   import context._

@@ -1,0 +1,30 @@
+20131021 External Services and Integration Rules
+
+Admin Use
+~ External fields and integration rules
+~ How many exception policies should be defined? Can you have a few you reuse in several places?
+~ Fields in context for service mapping filtered by context? No, too general, no workflow context available yet.
+~ How do you avoid high volume issues, lots of workflows hitting the same endpoint at the same time of day?
+~ What sort of advice can we give our customers in terms of performance, planning workflows that use external fields, and so on. What kind of preformance testing should we do, with what scenarios? Colt long lived workflows vs. Colt shorter flows, concentrated activity within a day or two.
+~ Can we have flows that gather information, then eventually invoke a service to effect a business transaction, with only human interaction for exceptions, processing outside certain bounds based on policy, etc.
+~ Can we handle exceptions where we expect a single result from a service, but receieve multiple (e.g. look up customer by first name, last name, date of birth)
+~ How do we troubleshoot individual service calls? Should we offer a higher level troubleshooting mechanism beyond the mule logs?
+~ Mule configuration used to constrain/tune the system resources used for external system intergrations. 
+
+
+Technical Characteristics
+~ Do we support HTTPS? How do we configure our system to support HTTPS?
+~ How similar is the HTTPS configiration to what is done with process?
+
+
+Blue Prism
+
+3 COM apps
+~ One being rewritten using b2b
+~ One with 13 components - 7 can go away, rest might be addressed using integation rules (task manager, call into LOB systems to bring data back into XTRAC)
+~ New phone app using b2b
+
+~ List of web services - Blue Prism, can we use orchestration the process completely.
+
+
+
