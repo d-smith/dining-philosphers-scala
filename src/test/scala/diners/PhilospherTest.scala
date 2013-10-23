@@ -10,13 +10,18 @@ import org.scalatest.matchers.{MustMatchers, ShouldMatchers}
 import akka.util.Timeout
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import diners.TestHelper._
+import scala.util.Success
+import scala.util.Failure
 
 
 class PhilospherTest extends TestKit(ActorSystem("test-system"))
   with WordSpec
   with MustMatchers {
 
-  val philosopher =  TestActorRef[Philosopher]
+  val left = system.actorOf(Props[Fork])
+  val right = system.actorOf(Props[Fork])
+  val philosopher =  TestActorRef(Props(new Philosopher(left,right,"tester")))
   implicit val timeout = Timeout(5 seconds)
 
   "a philosopher" must {
@@ -24,23 +29,11 @@ class PhilospherTest extends TestKit(ActorSystem("test-system"))
 
       philosopher ! Think
       val future = philosopher ? ProbeCurrentBehavior
-      future.value.get match {
-        case Success(s) => { s must be === "thinking"  }
-        case Failure(e) => throw e
-      }
+      assertState(future, "thinking")
     }
   }
-  
-  "a thinking philosopher" must {
-    "become hungry" in {
-      //philosopher ! Eat
-      Thread.sleep(3000)
-      val future = philosopher ? ProbeCurrentBehavior
-      future.value.get match {
-        case Success(s) => { s must be === "hungry"  }
-        case Failure(e) => throw e
-      }
-    }
 
-  }
+
+
+
 }

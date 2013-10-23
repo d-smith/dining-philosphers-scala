@@ -1,7 +1,7 @@
 package diners
 
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
-import akka.actor.ActorSystem
+import akka.actor.{Props, ActorSystem}
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.WordSpec
 import akka.pattern.ask
@@ -16,14 +16,10 @@ class ForkTest extends TestKit(ActorSystem("test-system"))
   with WordSpec
   with MustMatchers {
 
-    def assertState(state:Future[Any], expectedValue: String) : Unit = {
-      state.value.get match {
-        case Success(s) => { s must be === expectedValue  }
-        case Failure(e) => throw e
-      }
-    }
+    import TestHelper.assertState
 
     val fork = TestActorRef[Fork]
+    val dummyFork = TestActorRef[Fork]
     implicit val timeout = Timeout(5 seconds)
 
     "a fork" must {
@@ -43,7 +39,7 @@ class ForkTest extends TestKit(ActorSystem("test-system"))
 
       "not given to another diner when in use" in {
         val freshFork = TestActorRef[Fork]
-        val diner = TestActorRef[Philosopher]
+        val diner = TestActorRef(Props(new Philosopher(dummyFork, dummyFork, "tester")))
         freshFork ! Pickup(diner)
         freshFork ! Pickup(self)
         expectMsg(InUse(freshFork))
@@ -53,7 +49,7 @@ class ForkTest extends TestKit(ActorSystem("test-system"))
 
       "become available when put down" in {
         val freshFork = TestActorRef[Fork]
-        val diner = TestActorRef[Philosopher]
+        val diner = TestActorRef(Props(new Philosopher(dummyFork, dummyFork, "tester")))
         freshFork ! Pickup(diner)
         freshFork ! Putdown(diner)
         freshFork ! Pickup(self)
@@ -62,7 +58,7 @@ class ForkTest extends TestKit(ActorSystem("test-system"))
 
       "not put down when another diner commands it" in {
         val freshFork = TestActorRef[Fork]
-        val diner = TestActorRef[Philosopher]
+        val diner = TestActorRef(Props(new Philosopher(dummyFork, dummyFork, "tester")))
         freshFork ! Pickup(diner)
         freshFork ! Putdown(self)
         freshFork ! Pickup(self)
