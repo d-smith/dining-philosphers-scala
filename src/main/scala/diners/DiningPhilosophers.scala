@@ -74,6 +74,8 @@ class Philosopher(leftFork: ActorRef, rightFork: ActorRef, name:String) extends 
       become(thinking)
       system.scheduler.scheduleOnce(getWait() seconds, self, Eat)
     }
+
+    case ProbeCurrentBehavior => sender ! "giving up"
   }
 
   def waitingForFork2(fork: ActorRef) : Receive = {
@@ -95,6 +97,8 @@ class Philosopher(leftFork: ActorRef, rightFork: ActorRef, name:String) extends 
       become(thinking)
       system.scheduler.scheduleOnce(getWait() seconds, self, Eat)
     }
+
+    case ProbeCurrentBehavior => sender ! "waitingForFork2"
 
   }
 
@@ -124,7 +128,6 @@ class Philosopher(leftFork: ActorRef, rightFork: ActorRef, name:String) extends 
       rightFork ! Pickup(self)
     }
 
-    case ProbeCurrentBehavior => sender ! "hungry"
   }
 
   def thinking : Receive = {
